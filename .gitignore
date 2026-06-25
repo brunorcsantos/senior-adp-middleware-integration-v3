@@ -1,0 +1,15 @@
+# Dependências
+node_modules/
+
+# Ambiente
+.env
+
+# Certificados — nunca versionar
+certs/
+
+# Logs gerados em runtime
+logs/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
