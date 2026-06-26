@@ -112,7 +112,11 @@ export const mapWorkers = (workers, uuidRun) => {
   logger.info('MAPPER', `Mapeando ${workers.length} workers`, uuidRun);
 
   const mapped = workers
-    .map(worker => mapWorker(worker, uuidRun))
+    .map((worker, index) => {
+      const record = mapWorker(worker, uuidRun);
+      if (!record) return null;
+      return { ...record, SEQREG: index + 1 };
+    })
     .filter(Boolean);
 
   logger.info('MAPPER', `Workers mapeados com sucesso: ${mapped.length}`, uuidRun);
@@ -122,7 +126,7 @@ export const mapWorkers = (workers, uuidRun) => {
 export const mapHistDeptos = (workers, uuidRun) => {
   logger.info('MAPPER', `Mapeando histórico de departamentos para ${workers.length} workers`, uuidRun);
 
-  const mapped = workers.map(worker => {
+  const mapped = workers.map((worker, index) => {
     try {
       const assignment = worker.workAssignments?.[0] ?? {};
       const homeOrg = assignment.homeOrganizationalUnits?.[0]?.nameCode ?? {};
@@ -130,6 +134,7 @@ export const mapHistDeptos = (workers, uuidRun) => {
       return {
         UUIDRUN: uuidRun,
         UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
         NUMEMP: null,
         TIPCOL: null,
         NUMCAD: null,
@@ -153,7 +158,7 @@ export const mapHistDeptos = (workers, uuidRun) => {
 export const mapHistCC = (workers, uuidRun) => {
   logger.info('MAPPER', `Mapeando histórico de CC para ${workers.length} workers`, uuidRun);
 
-  const mapped = workers.map(worker => {
+  const mapped = workers.map((worker, index) => {
     try {
       const assignment = worker.workAssignments?.[0] ?? {};
       const assignedOrg = assignment.assignedOrganizationalUnits?.[0]?.nameCode ?? {};
@@ -161,6 +166,7 @@ export const mapHistCC = (workers, uuidRun) => {
       return {
         UUIDRUN: uuidRun,
         UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
         NUMEMP: null,
         TIPCOL: null,
         NUMCAD: null,

@@ -50,7 +50,11 @@ export const mapDepartments = (departments, uuidRun) => {
   logger.info('MAPPER', `Mapeando ${departments.length} departamentos`, uuidRun);
 
   const mapped = departments
-    .map(dep => mapDepartment(dep, uuidRun))
+    .map((dep, index) => {
+      const record = mapDepartment(dep, uuidRun);
+      if (!record) return null;
+      return { ...record, SEQREG: index + 1 };
+    })
     .filter(Boolean);
 
   logger.info('MAPPER', `Departamentos mapeados com sucesso: ${mapped.length}`, uuidRun);

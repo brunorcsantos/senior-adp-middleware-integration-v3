@@ -23,3 +23,4 @@ src/services/test-workers.js
 src/services/test-soap.js
 src/mappers/test-worker-mapper.js
 src/mappers/test-mapper.js
+src/mappers/test-seqreg.js

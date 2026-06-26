@@ -48,13 +48,16 @@ export const mapLeaves = (workerLeaves, uuidRun) => {
   logger.info('MAPPER', `Mapeando afastamentos de ${workerLeaves.length} workers`, uuidRun);
 
   const mapped = [];
+  let seq = 1;
 
   for (const workerLeave of workerLeaves) {
     const leaves = workerLeave.leaves ?? [];
 
     for (const leave of leaves) {
       const record = mapLeave(workerLeave, leave, uuidRun);
-      if (record) mapped.push(record);
+      if (record) {
+        mapped.push({ ...record, SEQREG: seq++ });
+      }
     }
   }
 
