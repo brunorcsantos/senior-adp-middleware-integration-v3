@@ -21,3 +21,4 @@ src/services/test-fetchers.js
 src/services/test-headers.js
 src/services/test-workers.js
 src/mappers/test-worker-mapper.js
+src/mappers/test-mapper.js
