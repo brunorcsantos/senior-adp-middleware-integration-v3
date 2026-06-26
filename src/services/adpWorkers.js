@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { env } from '../utils/envConfig.js';
 import { logger } from '../utils/logger.js';
 import { getAdpToken, getMtlsAgent } from './adpAuth.js';
@@ -5,24 +6,22 @@ import { getAdpToken, getMtlsAgent } from './adpAuth.js';
 const TOP = 100;
 
 const fetchPage = async (token, agent, skip) => {
-  const url = `${env.urlAdp}/hr/v2/workers?$top=${TOP}&$skip=${skip}`;
-
-  const response = await fetch(url, {
+  const response = await axios({
     method: 'GET',
-    agent,
+    url: `${env.urlAdp}/hr/v2/workers`,
     headers: {
       'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      'User-Agent': undefined,
+      'Accept': undefined,
     },
+    params: {
+      $top: TOP,
+      ...(skip > 0 && { $skip: skip }),
+    },
+    httpsAgent: agent,
   });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`ADP Workers falhou: ${response.status} - ${detail}`);
-  }
-
-  const data = await response.json();
-  return data.workers ?? [];
+  return response.data.workers ?? [];
 };
 
 export const fetchAllWorkers = async (uuidRun = '-') => {

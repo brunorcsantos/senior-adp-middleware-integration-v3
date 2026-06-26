@@ -13,3 +13,9 @@ logs/
 # Sistema operacional
 .DS_Store
 Thumbs.db
+
+# Testes
+src/services/test-auth.js
+src/services/test-fetchers.js
+src/services/test-headers.js
+src/services/test-workers.js
