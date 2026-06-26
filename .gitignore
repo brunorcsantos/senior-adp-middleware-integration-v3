@@ -20,5 +20,6 @@ src/services/test-auth.js
 src/services/test-fetchers.js
 src/services/test-headers.js
 src/services/test-workers.js
+src/services/test-soap.js
 src/mappers/test-worker-mapper.js
 src/mappers/test-mapper.js
