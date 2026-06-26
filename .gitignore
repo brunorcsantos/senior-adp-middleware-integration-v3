@@ -6,6 +6,7 @@ node_modules/
 
 # Certificados — nunca versionar
 certs/
+convert-keys.js
 
 # Logs gerados em runtime
 logs/
@@ -19,3 +20,4 @@ src/services/test-auth.js
 src/services/test-fetchers.js
 src/services/test-headers.js
 src/services/test-workers.js
+src/mappers/test-worker-mapper.js
