@@ -22,10 +22,6 @@ const router = Router();
 
 let isRunning = false;
 
-const formatDateTime = (date = new Date()) => {
-  return date.toISOString().replace('T', ' ').substring(0, 19);
-};
-
 const runSync = async (uuidRun) => {
   let totalWkr = 0;
   let totalDep = 0;
@@ -38,8 +34,6 @@ const runSync = async (uuidRun) => {
     // Registrar início da execução
     await processaRun({
       UUIDRUN: uuidRun,
-      DTINICIO: formatDateTime(),
-      DTFIM: null,
       STATUS: 'RUNNING',
       TOTALWKR: 0,
       TOTALDEP: 0,
@@ -89,8 +83,6 @@ const runSync = async (uuidRun) => {
     // ─── FINALIZAR EXECUÇÃO ───────────────────────────────────────────
     await processaRun({
       UUIDRUN: uuidRun,
-      DTINICIO: null,
-      DTFIM: formatDateTime(),
       STATUS: 'DONE',
       TOTALWKR: totalWkr,
       TOTALDEP: totalDep,
@@ -109,8 +101,6 @@ const runSync = async (uuidRun) => {
     try {
       await processaRun({
         UUIDRUN: uuidRun,
-        DTINICIO: null,
-        DTFIM: formatDateTime(),
         STATUS: 'ERROR',
         TOTALWKR: totalWkr,
         TOTALDEP: totalDep,

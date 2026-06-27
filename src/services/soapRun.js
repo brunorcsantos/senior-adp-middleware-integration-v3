@@ -6,8 +6,6 @@ export const processaRun = async (runData, uuidRun = '-') => {
 
   return callOperation('ProcessaRun', {
     UUIDRUN: runData.UUIDRUN,
-    DTINICIO: runData.DTINICIO ?? null,
-    DTFIM: runData.DTFIM ?? null,
     STATUS: runData.STATUS,
     TOTALWKR: runData.TOTALWKR ?? 0,
     TOTALDEP: runData.TOTALDEP ?? 0,

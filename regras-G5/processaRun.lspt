@@ -1,0 +1,47 @@
+Definir Funcao InserirRequisicao();
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aSTATUS;
+Definir Data dDTINICIO;
+Definir Data dDTFIM;
+Definir Numero xTOTALWKR;
+Definir Numero xTOTALDEP;
+Definir Numero xTOTALAFA;
+Definir Numero xTOTALHDP;
+Definir Numero xTOTALHCC;
+Definir Numero xERROS;
+
+aUUIDRUN  = ProcessaRun.UUIDRUN;
+aSTATUS   = ProcessaRun.STATUS;
+dDTINICIO = ProcessaRun.DTINICIO;
+dDTFIM    = ProcessaRun.DTFIM;
+xTOTALWKR = ProcessaRun.TOTALWKR;
+xTOTALDEP = ProcessaRun.TOTALDEP;
+xTOTALAFA = ProcessaRun.TOTALAFA;
+xTOTALHDP = ProcessaRun.TOTALHDP;
+xTOTALHCC = ProcessaRun.TOTALHCC;
+xERROS    = ProcessaRun.ERROS;
+
+
+@------------------------------------Funções----------------------------------------@
+Funcao InserirRequisicao();{
+
+  IniciarTransacao();
+  ExecSQLEx ("INSERT INTO USU_TADPRUN (USU_UUIDRUN, USU_STATUS, USU_DTINICIO,            \
+                                         USU_DTFIM, USU_TOTALWKR, USU_TOTALDEP,          \
+                                      USU_TOTALAFA, USU_TOTALHDP, USU_TOTALHCC, USU_ERROS)   \
+                          VALUES (:aUUIDRUN, :aSTATUS, :dDTINICIO, :dDTFIM,  \   
+                                  :xTOTALWKR, :xTOTALDEP, :xTOTALAFA,        \
+                                  :xTOTALHDP, :xTOTALHCC, :xERROS)", xErro, aMenLog);  
+  Se (xErro = 0 ) 
+    Inicio                                                                           
+      FinalizarTransacao();
+      aMenLog = "Requisição recebida com sucesso.";
+    Fim;
+    Senao 
+    Inicio
+      DesfazerTransacao();
+      aMenLog = "Requisição recebida com sucesso.";
+    Fim;
+        
+    }

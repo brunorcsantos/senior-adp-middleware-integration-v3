@@ -2,21 +2,10 @@ import { callOperation } from './soapClient.js';
 import { logger } from '../utils/logger.js';
 
 export const processaHistCC = async (histCC, uuidRun = '-') => {
-  logger.info('SOAP', `Enviando ${histCC.length} hist. CC ao Senior`, uuidRun);
+  logger.info('SOAP', `Enviando ${histCC.length} hist. CC ao Senior em uma única chamada`, uuidRun);
 
-  let enviados = 0;
-  let erros = 0;
+  await callOperation('ProcessaHistCC', { histCC }, uuidRun);
 
-  for (const cc of histCC) {
-    try {
-      await callOperation('ProcessaHistCC', cc, uuidRun);
-      enviados++;
-    } catch (err) {
-      logger.error('SOAP', `Erro ao enviar hist.CC ${cc.UUIDSO}: ${err.message}`, uuidRun);
-      erros++;
-    }
-  }
-
-  logger.info('SOAP', `Hist. CC concluído. Enviados: ${enviados} | Erros: ${erros}`, uuidRun);
-  return { enviados, erros };
+  logger.info('SOAP', `Hist. CC enviados com sucesso. Total: ${histCC.length}`, uuidRun);
+  return { enviados: histCC.length, erros: 0 };
 };

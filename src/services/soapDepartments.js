@@ -1,23 +1,11 @@
 import { callOperation } from './soapClient.js';
 import { logger } from '../utils/logger.js';
-import { env } from '../utils/envConfig.js';
 
 export const processaDepartamentos = async (departments, uuidRun = '-') => {
-  logger.info('SOAP', `Enviando ${departments.length} departamentos ao Senior`, uuidRun);
+  logger.info('SOAP', `Enviando ${departments.length} departamentos ao Senior em uma única chamada`, uuidRun);
 
-  let enviados = 0;
-  let erros = 0;
+  await callOperation('ProcessaDepartamentos', { departamentos: departments }, uuidRun);
 
-  for (const dep of departments) {
-    try {
-      await callOperation('ProcessaDepartamentos', dep, uuidRun);
-      enviados++;
-    } catch (err) {
-      logger.error('SOAP', `Erro ao enviar departamento ${dep.UUIDSO}: ${err.message}`, uuidRun);
-      erros++;
-    }
-  }
-
-  logger.info('SOAP', `Departamentos concluído. Enviados: ${enviados} | Erros: ${erros}`, uuidRun);
-  return { enviados, erros };
+  logger.info('SOAP', `Departamentos enviados com sucesso. Total: ${departments.length}`, uuidRun);
+  return { enviados: departments.length, erros: 0 };
 };
