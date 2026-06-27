@@ -1,0 +1,68 @@
+Definir Funcao InserirHistVinculo();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODVINCULO;
+Definir Alfa aNOMVINCULO;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+Definir Data DTPROCESS;
+
+xQtdLinhas = ProcessaHistVinculo.histVinculo.QtdLinhas;
+InserirHistVinculo();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistVinculo(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistVinculo.histVinculo.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistVinculo.histVinculo.UUIDRUN;
+    aUUIDSO    = ProcessaHistVinculo.histVinculo.UUIDSO;
+    xSEQREG    = ProcessaHistVinculo.histVinculo.SEQREG;
+    xNUMEMP    = ProcessaHistVinculo.histVinculo.NUMEMP;
+    xTIPCOL    = ProcessaHistVinculo.histVinculo.TIPCOL;
+    xNUMCAD    = ProcessaHistVinculo.histVinculo.NUMCAD;
+    dDATALT    = ProcessaHistVinculo.histVinculo.DATALT;
+    aCODVINCULO  = ProcessaHistVinculo.histVinculo.CODVINCULO;
+    aNOMVINCULO  = ProcessaHistVinculo.histVinculo.NOMVINCULO;
+    aSITUACAO  = ProcessaHistVinculo.histVinculo.SITUACAO;
+    dDTATUALIZ = ProcessaHistVinculo.histVinculo.DTATUALIZ;
+    dDTPROCESS = ProcessaHistVinculo.histVinculo.DTPROCESS;
+
+    ExecSQLEx("INSERT INTO USU_TADPHVI (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODVINCULO, USU_NOMVINCULO,\
+                                        USU_SITUACAO, USU_DTATUALIZ, USU_DTPROCESS)           \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODVINCULO, :aNOMVINCULO,                       \
+                       :aSITUACAO, :dDTATUALIZ, :dDTPROCESS)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. vinculo " + aUUIDSO + ": " + aMenLog;
+        ProcessaHistVinculo.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Hist. vinculo inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaHistVinculo.mensagemLog = aMenLog;
+}

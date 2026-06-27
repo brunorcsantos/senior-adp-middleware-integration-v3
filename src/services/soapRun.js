@@ -12,6 +12,13 @@ export const processaRun = async (runData, uuidRun = '-') => {
     TOTALAFA: runData.TOTALAFA ?? 0,
     TOTALHDP: runData.TOTALHDP ?? 0,
     TOTALHCC: runData.TOTALHCC ?? 0,
+    TOTALHCA: runData.TOTALHCA ?? 0,
+    TOTALHES: runData.TOTALHES ?? 0,
+    TOTALHFI: runData.TOTALHFI ?? 0,
+    TOTALHCO: runData.TOTALHCO ?? 0,
+    TOTALAPU: runData.TOTALAPU ?? 0,
+    TOTALHVI: runData.TOTALHVI ?? 0,
+    TOTALHSI: runData.TOTALHSI ?? 0,
     ERROS: runData.ERROS ?? 0,
   }, uuidRun);
 };

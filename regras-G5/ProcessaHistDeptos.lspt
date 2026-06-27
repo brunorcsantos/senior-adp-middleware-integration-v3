@@ -1,0 +1,66 @@
+Definir Funcao InserirHistDeptos();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODDEPTO;
+Definir Alfa aNOMDEPTO;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaHistDeptos.histDeptos.QtdLinhas;
+InserirHistDeptos();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistDeptos(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistDeptos.histDeptos.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistDeptos.histDeptos.UUIDRUN;
+    aUUIDSO    = ProcessaHistDeptos.histDeptos.UUIDSO;
+    xSEQREG    = ProcessaHistDeptos.histDeptos.SEQREG;
+    xNUMEMP    = ProcessaHistDeptos.histDeptos.NUMEMP;
+    xTIPCOL    = ProcessaHistDeptos.histDeptos.TIPCOL;
+    xNUMCAD    = ProcessaHistDeptos.histDeptos.NUMCAD;
+    dDATALT    = ProcessaHistDeptos.histDeptos.DATALT;
+    aCODDEPTO  = ProcessaHistDeptos.histDeptos.CODDEPTO;
+    aNOMDEPTO  = ProcessaHistDeptos.histDeptos.NOMDEPTO;
+    aSITUACAO  = ProcessaHistDeptos.histDeptos.SITUACAO;
+    dDTATUALIZ = ProcessaHistDeptos.histDeptos.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPHDP (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODDEPTO, USU_NOMDEPTO,\
+                                        USU_SITUACAO, USU_DTATUALIZ)           \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODDEPTO, :aNOMDEPTO,                       \
+                       :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. depto " + aUUIDSO + ": " + aMenLog;
+
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Hist. deptos inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaHistDeptos.mensagemLog = aMenLog;
+}

@@ -1,0 +1,151 @@
+Definir Funcao InserirWorkers();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Alfa aMATRICULA;
+Definir Alfa aCRACHA;
+Definir Alfa aWORKERID;
+Definir Alfa aNOME;
+Definir Alfa aCPF;
+Definir Alfa aPIS;
+Definir Alfa aRG;
+Definir Alfa aORGAORG;
+Definir Alfa aCTPS;
+Definir Alfa aSERIECTPS;
+Definir Data dDTNASC;
+Definir Alfa aSEXO;
+Definir Alfa aESTCIVIL;
+Definir Alfa aRACA;
+Definir Alfa aESCOLARIDADE;
+Definir Alfa aNOMMAE;
+Definir Alfa aNOMPAI;
+Definir Alfa aCIDNASC;
+Definir Alfa aUFNASC;
+Definir Alfa aLOGRADOURO;
+Definir Alfa aNUMERO;
+Definir Alfa aBAIRRO;
+Definir Alfa aCIDADE;
+Definir Alfa aUF;
+Definir Alfa aCEP;
+Definir Alfa aTELEFONE;
+Definir Alfa aEMAIL_PES;
+Definir Alfa aEMAIL_CORP;
+Definir Alfa aCARGO;
+Definir Alfa aCODCARGO;
+Definir Alfa aDEPTO;
+Definir Alfa aCODDEPTO;
+Definir Data dDTADM;
+Definir Data dDTRETORNO;
+Definir Alfa aSTATUS;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaWorkers.workers.QtdLinhas;
+InserirWorkers();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirWorkers(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaWorkers.workers.LinhaAtual = nLinha;
+
+    aUUIDRUN      = ProcessaWorkers.workers.UUIDRUN;
+    aUUIDSO       = ProcessaWorkers.workers.UUIDSO;
+    xSEQREG       = ProcessaWorkers.workers.SEQREG;
+    xNUMEMP       = ProcessaWorkers.workers.NUMEMP;
+    xTIPCOL       = ProcessaWorkers.workers.TIPCOL;
+    xNUMCAD       = ProcessaWorkers.workers.NUMCAD;
+    aMATRICULA    = ProcessaWorkers.workers.MATRICULA;
+    aCRACHA       = ProcessaWorkers.workers.CRACHA;
+    aWORKERID     = ProcessaWorkers.workers.WORKERID;
+    aNOME         = ProcessaWorkers.workers.NOME;
+    aCPF          = ProcessaWorkers.workers.CPF;
+    aPIS          = ProcessaWorkers.workers.PIS;
+    aRG           = ProcessaWorkers.workers.RG;
+    aORGAORG      = ProcessaWorkers.workers.ORGAORG;
+    aCTPS         = ProcessaWorkers.workers.CTPS;
+    aSERIECTPS    = ProcessaWorkers.workers.SERIECTPS;
+    dDTNASC       = ProcessaWorkers.workers.DTNASC;
+    aSEXO         = ProcessaWorkers.workers.SEXO;
+    aESTCIVIL     = ProcessaWorkers.workers.ESTCIVIL;
+    aRACA         = ProcessaWorkers.workers.RACA;
+    aESCOLARIDADE = ProcessaWorkers.workers.ESCOLARIDADE;
+    aNOMMAE       = ProcessaWorkers.workers.NOMMAE;
+    aNOMPAI       = ProcessaWorkers.workers.NOMPAI;
+    aCIDNASC      = ProcessaWorkers.workers.CIDNASC;
+    aUFNASC       = ProcessaWorkers.workers.UFNASC;
+    aLOGRADOURO   = ProcessaWorkers.workers.LOGRADOURO;
+    aNUMERO       = ProcessaWorkers.workers.NUMERO;
+    aBAIRRO       = ProcessaWorkers.workers.BAIRRO;
+    aCIDADE       = ProcessaWorkers.workers.CIDADE;
+    aUF           = ProcessaWorkers.workers.UF;
+    aCEP          = ProcessaWorkers.workers.CEP;
+    aTELEFONE     = ProcessaWorkers.workers.TELEFONE;
+    aEMAIL_PES    = ProcessaWorkers.workers.EMAIL_PES;
+    aEMAIL_CORP   = ProcessaWorkers.workers.EMAIL_CORP;
+    aCARGO        = ProcessaWorkers.workers.CARGO;
+    aCODCARGO     = ProcessaWorkers.workers.CODCARGO;
+    aDEPTO        = ProcessaWorkers.workers.DEPTO;
+    aCODDEPTO     = ProcessaWorkers.workers.CODDEPTO;
+    dDTADM        = ProcessaWorkers.workers.DTADM;
+    dDTRETORNO    = ProcessaWorkers.workers.DTRETORNO;
+    aSTATUS       = ProcessaWorkers.workers.STATUS;
+    aSITUACAO     = ProcessaWorkers.workers.SITUACAO;
+    dDTATUALIZ    = ProcessaWorkers.workers.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPWKR (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,            \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,              \
+                                        USU_MATRICULA, USU_CRACHA, USU_WORKERID,         \
+                                        USU_NOME, USU_CPF, USU_PIS, USU_RG,             \
+                                        USU_ORGAORG, USU_CTPS, USU_SERIECTPS,           \
+                                        USU_DTNASC, USU_SEXO, USU_ESTCIVIL,             \
+                                        USU_RACA, USU_ESCOLAR,                     \
+                                        USU_NOMMAE, USU_NOMPAI,                         \
+                                        USU_CIDNASC, USU_UFNASC,                        \
+                                        USU_LOGRADOURO, USU_NUMERO, USU_BAIRRO,         \
+                                        USU_CIDADE, USU_UF, USU_CEP,                    \
+                                        USU_TELEFONE, USU_EMAIL_PES, USU_EMAIL_CORP,    \
+                                        USU_CARGO, USU_CODCARGO, USU_DEPTO,             \
+                                        USU_CODDEPTO, USU_DTADM, USU_DTRETORNO,         \
+                                        USU_STATUS, USU_SITUACAO, USU_DTATUALIZ)        \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                                   \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                                    \
+                       :aMATRICULA, :aCRACHA, :aWORKERID,                               \
+                       :aNOME, :aCPF, :aPIS, :aRG,                                      \
+                       :aORGAORG, :aCTPS, :aSERIECTPS,                                  \
+                       :dDTNASC, :aSEXO, :aESTCIVIL,                                    \
+                       :aRACA, :aESCOLARIDADE,                                           \
+                       :aNOMMAE, :aNOMPAI,                                               \
+                       :aCIDNASC, :aUFNASC,                                              \
+                       :aLOGRADOURO, :aNUMERO, :aBAIRRO,                                \
+                       :aCIDADE, :aUF, :aCEP,                                            \
+                       :aTELEFONE, :aEMAIL_PES, :aEMAIL_CORP,                           \
+                       :aCARGO, :aCODCARGO, :aDEPTO,                                    \
+                       :aCODDEPTO, :dDTADM, :dDTRETORNO,                                \
+                       :aSTATUS, :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir worker " + aUUIDSO + ": " + aMenLog;       
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Workers inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaWorkers.mensagemLog = aMenLog;
+}

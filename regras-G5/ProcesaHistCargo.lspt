@@ -1,0 +1,72 @@
+Definir Funcao InserirHistCargo();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODCARGO;
+Definir Alfa aNOMCARGO;
+Definir Alfa aCODFAMCAR;
+Definir Alfa aNOMFAMCAR;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaHistCargo.histCargos.QtdLinhas;
+InserirHistCargo();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistCargo(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistCargo.histCargos.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistCargo.histCargos.UUIDRUN;
+    aUUIDSO    = ProcessaHistCargo.histCargos.UUIDSO;
+    xSEQREG    = ProcessaHistCargo.histCargos.SEQREG;
+    xNUMEMP    = ProcessaHistCargo.histCargos.NUMEMP;
+    xTIPCOL    = ProcessaHistCargo.histCargos.TIPCOL;
+    xNUMCAD    = ProcessaHistCargo.histCargos.NUMCAD;
+    dDATALT    = ProcessaHistCargo.histCargos.DATALT;
+    aCODCARGO  = ProcessaHistCargo.histCargos.CODCARGO;
+    aNOMCARGO  = ProcessaHistCargo.histCargos.NOMCARGO;
+    aCODFAMCAR  = ProcessaHistCargo.histCargos.CODFAMCAR;
+    aNOMFAMCAR  = ProcessaHistCargo.histCargos.NOMFAMCAR;        
+    aSITUACAO  = ProcessaHistCargo.histCargos.SITUACAO;
+    dDTATUALIZ = ProcessaHistCargo.histCargos.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPHCA (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODCARGO, USU_NOMCARGO,\
+                                        USU_CODFAMCAR, USU_NOMFAMCAR,      \
+                                        USU_SITUACAO, USU_DTATUALIZ)           \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODCARGO, :aNOMCARGO,                       \
+                       :aCODFAMCAR, :aNOMFAMCAR,                           \
+                       :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. depto " + aUUIDSO + ": " + aMenLog;
+
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Hist. cargo inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaHistcargo.mensagemLog = aMenLog;
+}

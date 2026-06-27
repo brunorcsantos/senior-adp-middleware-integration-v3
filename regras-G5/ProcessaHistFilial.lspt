@@ -1,0 +1,66 @@
+Definir Funcao InserirHistFilial();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODFILIAL;
+Definir Alfa aNOMFILIAL;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaHistFilial.histFilial.QtdLinhas;
+InserirHistFilial();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistFilial(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistFilial.histFilial.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistFilial.histFilial.UUIDRUN;
+    aUUIDSO    = ProcessaHistFilial.histFilial.UUIDSO;
+    xSEQREG    = ProcessaHistFilial.histFilial.SEQREG;
+    xNUMEMP    = ProcessaHistFilial.histFilial.NUMEMP;
+    xTIPCOL    = ProcessaHistFilial.histFilial.TIPCOL;
+    xNUMCAD    = ProcessaHistFilial.histFilial.NUMCAD;
+    dDATALT    = ProcessaHistFilial.histFilial.DATALT;
+    aCODFILIAL  = ProcessaHistFilial.histFilial.CODFILIAL;
+    aNOMFILIAL  = ProcessaHistFilial.histFilial.NOMFILIAL;
+    aSITUACAO  = ProcessaHistFilial.histFilial.SITUACAO;
+    dDTATUALIZ = ProcessaHistFilial.histFilial.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPHFI (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODFILIAL, USU_NOMFILIAL,\
+                                        USU_SITUACAO, USU_DTATUALIZ)           \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODFILIAL, :aNOMFILIAL,                       \
+                       :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. filial " + aUUIDSO + ": " + aMenLog;
+        ProcessaHistFilial.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Hist. filial inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaHistFilial.mensagemLog = aMenLog;
+}

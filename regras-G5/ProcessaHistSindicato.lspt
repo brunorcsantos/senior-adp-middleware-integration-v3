@@ -1,0 +1,74 @@
+Definir Funcao InserirHistSindicato();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODSINDICATO;
+Definir Alfa aNOMSINDICATO;
+Definir Alfa aCODBASESIND;
+Definir Alfa aNOMBASESIND;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+Definir Data DTPROCESS;
+
+xQtdLinhas = ProcessaHistSindicato.histSindicato.QtdLinhas;
+InserirHistSindicato();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistSindicato(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistSindicato.histSindicato.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistSindicato.histSindicato.UUIDRUN;
+    aUUIDSO    = ProcessaHistSindicato.histSindicato.UUIDSO;
+    xSEQREG    = ProcessaHistSindicato.histSindicato.SEQREG;
+    xNUMEMP    = ProcessaHistSindicato.histSindicato.NUMEMP;
+    xTIPCOL    = ProcessaHistSindicato.histSindicato.TIPCOL;
+    xNUMCAD    = ProcessaHistSindicato.histSindicato.NUMCAD;
+    dDATALT    = ProcessaHistSindicato.histSindicato.DATALT;
+    aCODSINDICATO  = ProcessaHistSindicato.histSindicato.CODSINDICATO;
+    aNOMSINDICATO  = ProcessaHistSindicato.histSindicato.NOMSINDICATO;
+    aCODBASESIND  = ProcessaHistSindicato.histSindicato.CODBASESIND;
+    aNOMBASESIND  = ProcessaHistSindicato.histSindicato.NOMBASESIND;
+    aSITUACAO  = ProcessaHistSindicato.histSindicato.SITUACAO;
+    dDTATUALIZ = ProcessaHistSindicato.histSindicato.DTATUALIZ;
+    dDTPROCESS = ProcessaHistSindicato.histSindicato.DTPROCESS;
+
+    ExecSQLEx("INSERT INTO USU_TADPHSI (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODSINDIC, USU_NOMSINDIC,\
+                                        USU_CODBASESIN, USU_NOMBASESIN,\
+                                        USU_SITUACAO, USU_DTATUALIZ, USU_DTPROCESS)           \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODSINDICATO, :aNOMSINDICATO,            \
+                       :aCODBASESIND, :aNOMBASESIND,                       \
+                       :aSITUACAO, :dDTATUALIZ, :dDTPROCESS)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. sindicato " + aUUIDSO + ": " + aMenLog;
+        ProcessaHistSindicato.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Hist. sindicato inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaHistSindicato.mensagemLog = aMenLog;
+}

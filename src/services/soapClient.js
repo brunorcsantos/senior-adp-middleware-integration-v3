@@ -31,8 +31,12 @@ export const callOperation = async (operation, parameters, uuidRun = '-') => {
 
   logger.info('SOAP', `Chamando operação ${operation}`, uuidRun);
 
-  try {
+    try {
     const [result] = await client[`${operation}Async`](args);
+
+    if (result?.result?.mensagemLog) {
+      logger.info('SOAP', `[${operation}] mensagemLog: ${result.result.mensagemLog}`, uuidRun);
+    }
 
     if (result?.result?.erroExecucao) {
       throw new Error(`Erro Senior [${operation}]: ${result.result.erroExecucao}`);
