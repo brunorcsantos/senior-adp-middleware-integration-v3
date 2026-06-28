@@ -1,0 +1,82 @@
+Definir Funcao InserirDepartamentos();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Alfa aCODDEP;
+Definir Alfa aNOMDEP;
+Definir Alfa aDESCRICAO;
+Definir Alfa aATIVO;
+Definir Alfa aCODCC;
+Definir Alfa aCODCONTRAP;
+Definir Alfa aCODDIVCC;
+Definir Alfa aCODLOCALIZ;
+Definir Alfa aNOMLOCALIZ;
+Definir Alfa aCIDLOCALIZ;
+Definir Alfa aUFLOCALIZ;
+Definir Alfa aCEPLOCALIZ;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaDepartamentos.departamentos.QtdLinhas;
+InserirDepartamentos();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirDepartamentos(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaDepartamentos.departamentos.LinhaAtual = nLinha;
+
+    aUUIDRUN    = ProcessaDepartamentos.departamentos.UUIDRUN;
+    aUUIDSO     = ProcessaDepartamentos.departamentos.UUIDSO;
+    xSEQREG     = ProcessaDepartamentos.departamentos.SEQREG;
+    aCODDEP     = ProcessaDepartamentos.departamentos.CODDEP;
+    aNOMDEP     = ProcessaDepartamentos.departamentos.NOMDEP;
+    aDESCRICAO  = ProcessaDepartamentos.departamentos.DESCRICAO;
+    aATIVO      = ProcessaDepartamentos.departamentos.ATIVO;
+    aCODCC      = ProcessaDepartamentos.departamentos.CODCC;
+    aCODCONTRAP = ProcessaDepartamentos.departamentos.CODCONTRAP;
+    aCODDIVCC   = ProcessaDepartamentos.departamentos.CODDIVCC;
+    aCODLOCALIZ = ProcessaDepartamentos.departamentos.CODLOCALIZ;
+    aNOMLOCALIZ = ProcessaDepartamentos.departamentos.NOMLOCALIZ;
+    aCIDLOCALIZ = ProcessaDepartamentos.departamentos.CIDLOCALIZ;
+    aUFLOCALIZ  = ProcessaDepartamentos.departamentos.UFLOCALIZ;
+    aCEPLOCALIZ = ProcessaDepartamentos.departamentos.CEPLOCALIZ;
+    aSITUACAO   = ProcessaDepartamentos.departamentos.SITUACAO;
+    dDTATUALIZ  = ProcessaDepartamentos.departamentos.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPDEP (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,         \
+                                        USU_CODDEP, USU_NOMDEP, USU_DESCRICAO,        \
+                                        USU_ATIVO, USU_CODCC, USU_CODCONTRAP,         \
+                                        USU_CODDIVCC, USU_CODLOCALIZ, USU_NOMLOCALIZ, \
+                                        USU_CIDLOCALIZ, USU_UFLOCALIZ, USU_CEPLOCALIZ,\
+                                        USU_SITUACAO, USU_DTATUALIZ)                  \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                                 \
+                       :aCODDEP, :aNOMDEP, :aDESCRICAO,                               \
+                       :aATIVO, :aCODCC, :aCODCONTRAP,                                \
+                       :aCODDIVCC, :aCODLOCALIZ, :aNOMLOCALIZ,                        \
+                       :aCIDLOCALIZ, :aUFLOCALIZ, :aCEPLOCALIZ,                       \
+                       :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir departamento " + aUUIDSO + ": " + aMenLog;
+        ProcessaDepartamentos.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Departamentos inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaDepartamentos.mensagemLog = aMenLog;
+}

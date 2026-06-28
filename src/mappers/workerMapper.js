@@ -12,13 +12,23 @@ const findCustomField = (stringFields = [], shortName) => {
   return stringFields.find(f => f.nameCode?.shortName === shortName)?.stringValue ?? null;
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return null;
-  return dateStr.substring(0, 10);
+const formatDate = (value) => {
+  if (!value || typeof value !== 'string') return null;
+
+  const [datePart] = value.split('T');
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
 };
 
 const formatDateTime = (date = new Date()) => {
-  return date.toISOString().replace('T', ' ').substring(0, 19);
+  const pad = (n) => String(n).padStart(2, '0');
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 export const mapWorker = (worker, uuidRun) => {
@@ -100,7 +110,7 @@ export const mapWorker = (worker, uuidRun) => {
       // Controle de staging
       SITUACAO: 'P',
       DTATUALIZ: formatDateTime(),
-      DTPROCESSADO: null,
+      DTPROCESS: null,
     };
   } catch (err) {
     logger.error('MAPPER', `Erro ao mapear worker ${worker?.associateOID}: ${err.message}`, uuidRun);
@@ -143,7 +153,7 @@ export const mapHistDeptos = (workers, uuidRun) => {
         NOMDEPTO: homeOrg.shortName ?? null,
         SITUACAO: 'P',
         DTATUALIZ: formatDateTime(),
-        DTPROCESSADO: null,
+        DTPROCESS: null,
       };
     } catch (err) {
       logger.error('MAPPER', `Erro ao mapear hist.depto worker ${worker?.associateOID}: ${err.message}`, uuidRun);
@@ -175,7 +185,7 @@ export const mapHistCC = (workers, uuidRun) => {
         NOMCC: assignedOrg.shortName ?? null,
         SITUACAO: 'P',
         DTATUALIZ: formatDateTime(),
-        DTPROCESSADO: null,
+        DTPROCESS: null,
       };
     } catch (err) {
       logger.error('MAPPER', `Erro ao mapear hist.CC worker ${worker?.associateOID}: ${err.message}`, uuidRun);
@@ -184,5 +194,232 @@ export const mapHistCC = (workers, uuidRun) => {
   }).filter(Boolean);
 
   logger.info('MAPPER', `Histórico de CC mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistCargo = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de cargo para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODCARGO: assignment.jobCode?.codeValue ?? null,
+        NOMCARGO: assignment.jobTitle ?? assignment.jobCode?.shortName ?? null,
+        CODFAMCAR: assignment.jobFamilyCode?.codeValue ?? null,
+        NOMFAMCAR: assignment.jobFamilyCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.cargo worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de cargo mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistEscala = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de escala para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+      const standardHours = assignment.standardHours ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODESCALA: assignment.workShiftCode?.codeValue ?? null,
+        NOMESCALA: assignment.workShiftCode?.shortName ?? null,
+        QTDHORAS: standardHours.hoursQuantity != null ? Math.round(standardHours.hoursQuantity) : null,
+        UNDHORAS: standardHours.unitCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.escala worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de escala mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistFilial = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de filial para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+      const workLocation = assignment.homeWorkLocation?.nameCode ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODFILIAL: workLocation.codeValue ?? null,
+        NOMFILIAL: workLocation.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.filial worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de filial mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistContrato = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de contrato para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODPRAZO: assignment.assignmentTermCode?.codeValue ?? null,
+        NOMPRAZO: assignment.assignmentTermCode?.shortName ?? null,
+        CODJORNADA: assignment.workLevelCode?.codeValue ?? null,
+        NOMJORNADA: assignment.workLevelCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.contrato worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de contrato mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistApuracao = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de apuração para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODAPURA: assignment.workArrangementCode?.codeValue ?? null,
+        NOMAPURA: assignment.workArrangementCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.apuração worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de apuração mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistVinculo = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de vínculo para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODVINCULO: assignment.workerTypeCode?.codeValue ?? null,
+        NOMVINCULO: assignment.workerTypeCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.vínculo worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de vínculo mapeado: ${mapped.length}`, uuidRun);
+  return mapped;
+};
+
+export const mapHistSindicato = (workers, uuidRun) => {
+  logger.info('MAPPER', `Mapeando histórico de sindicato para ${workers.length} workers`, uuidRun);
+
+  const mapped = workers.map((worker, index) => {
+    try {
+      const assignment = worker.workAssignments?.[0] ?? {};
+
+      return {
+        UUIDRUN: uuidRun,
+        UUIDSO: worker.associateOID ?? null,
+        SEQREG: index + 1,
+        NUMEMP: null,
+        TIPCOL: null,
+        NUMCAD: null,
+        DATALT: formatDate(assignment.actualStartDate),
+        CODSINDIC: assignment.laborUnion?.laborUnionCode?.codeValue ?? null,
+        NOMSINDIC: assignment.laborUnion?.laborUnionCode?.shortName ?? null,
+        CODBASESIN: assignment.bargainingUnit?.bargainingUnitCode?.codeValue ?? null,
+        NOMBASESIN: assignment.bargainingUnit?.bargainingUnitCode?.shortName ?? null,
+        SITUACAO: 'P',
+        DTATUALIZ: formatDateTime(),
+        DTPROCESS: null,
+      };
+    } catch (err) {
+      logger.error('MAPPER', `Erro ao mapear hist.sindicato worker ${worker?.associateOID}: ${err.message}`, uuidRun);
+      return null;
+    }
+  }).filter(Boolean);
+
+  logger.info('MAPPER', `Histórico de sindicato mapeado: ${mapped.length}`, uuidRun);
   return mapped;
 };

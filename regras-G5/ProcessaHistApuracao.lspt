@@ -1,0 +1,74 @@
+Definir Funcao InserirHistApuracao();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+Definir Numero xTeveErro;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATALT;
+Definir Alfa aCODAPURACAO;
+Definir Alfa aNOMAPURACAO;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+Definir Data dDTPROCESS;
+
+xQtdLinhas = ProcessaHistApuracao.histApuracoes.QtdLinhas;
+InserirHistApuracao();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirHistApuracao(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaHistApuracao.histApuracoes.LinhaAtual = nLinha;
+
+    aUUIDRUN   = ProcessaHistApuracao.histApuracoes.UUIDRUN;
+    aUUIDSO    = ProcessaHistApuracao.histApuracoes.UUIDSO;
+    xSEQREG    = ProcessaHistApuracao.histApuracoes.SEQREG;
+    xNUMEMP    = ProcessaHistApuracao.histApuracoes.NUMEMP;
+    xTIPCOL    = ProcessaHistApuracao.histApuracoes.TIPCOL;
+    xNUMCAD    = ProcessaHistApuracao.histApuracoes.NUMCAD;
+    dDATALT    = ProcessaHistApuracao.histApuracoes.DATALT;
+    aCODAPURACAO  = ProcessaHistApuracao.histApuracoes.CODAPURACAO;
+    aNOMAPURACAO  = ProcessaHistApuracao.histApuracoes.NOMAPURACAO;
+    aSITUACAO  = ProcessaHistApuracao.histApuracoes.SITUACAO;
+    dDTATUALIZ = ProcessaHistApuracao.histApuracoes.DTATUALIZ;
+    dDTPROCESS = ProcessaHistApuracao.histApuracoes.DTPROCESS;
+
+    ExecSQLEx("INSERT INTO USU_TADPAPU (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
+                                        USU_DATALT, USU_CODAPURA, USU_NOMAPURA,\
+                                        USU_SITUACAO, USU_DTATUALIZ, USU_DTPROCESS) \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
+                       :dDATALT, :aCODAPURACAO, :aNOMAPURACAO,                       \
+                       :aSITUACAO, :dDTATUALIZ, :dDTPROCESS)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir hist. apuração " + aUUIDSO + ": " + aMenLog;
+        xTeveErro = 1;
+        ProcessaHistApuracao.erroExecucao = aMenLog;
+        ProcessaHistApuracao.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  Se (xTeveErro <> 1)
+    Inicio
+      IntParaAlfa(xQtdLinhas, aQtdLinhas);
+      aMenLog = "Hist. apuração inseridos com sucesso. Total: " + aQtdLinhas;
+      ProcessaHistApuracao.mensagemLog = aMenLog;
+    Fim;
+}

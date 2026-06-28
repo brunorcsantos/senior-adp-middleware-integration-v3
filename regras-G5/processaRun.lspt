@@ -1,20 +1,21 @@
 Definir Funcao InserirRequisicao();
+Definir Funcao AtualizarRequisicao();
 
+Definir Alfa aMenLog;
 Definir Alfa aUUIDRUN;
 Definir Alfa aSTATUS;
-Definir Data dDTINICIO;
-Definir Data dDTFIM;
+Definir Alfa aHora;
 Definir Numero xTOTALWKR;
 Definir Numero xTOTALDEP;
 Definir Numero xTOTALAFA;
 Definir Numero xTOTALHDP;
 Definir Numero xTOTALHCC;
 Definir Numero xERROS;
+Definir data dDatHoj;
+
 
 aUUIDRUN  = ProcessaRun.UUIDRUN;
 aSTATUS   = ProcessaRun.STATUS;
-dDTINICIO = ProcessaRun.DTINICIO;
-dDTFIM    = ProcessaRun.DTFIM;
 xTOTALWKR = ProcessaRun.TOTALWKR;
 xTOTALDEP = ProcessaRun.TOTALDEP;
 xTOTALAFA = ProcessaRun.TOTALAFA;
@@ -22,26 +23,66 @@ xTOTALHDP = ProcessaRun.TOTALHDP;
 xTOTALHCC = ProcessaRun.TOTALHCC;
 xERROS    = ProcessaRun.ERROS;
 
+Se (aSTATUS = "RUNNING") {
+  InserirRequisicao();
+} Senao {
+  AtualizarRequisicao();
+}
 
 @------------------------------------Funções----------------------------------------@
-Funcao InserirRequisicao();{
 
+Funcao InserirRequisicao(); {
+  dDathoj = datsis;
+  xHora = horsis;
+  ConverteMascara(1, xHora, aHora, "hh:mm");
+  
   IniciarTransacao();
-  ExecSQLEx ("INSERT INTO USU_TADPRUN (USU_UUIDRUN, USU_STATUS, USU_DTINICIO,            \
-                                         USU_DTFIM, USU_TOTALWKR, USU_TOTALDEP,          \
-                                      USU_TOTALAFA, USU_TOTALHDP, USU_TOTALHCC, USU_ERROS)   \
-                          VALUES (:aUUIDRUN, :aSTATUS, :dDTINICIO, :dDTFIM,  \   
-                                  :xTOTALWKR, :xTOTALDEP, :xTOTALAFA,        \
-                                  :xTOTALHDP, :xTOTALHCC, :xERROS)", xErro, aMenLog);  
-  Se (xErro = 0 ) 
-    Inicio                                                                           
+  ExecSQLEx("INSERT INTO USU_TADPRUN (USU_UUIDRUN, USU_STATUS, USU_DTINICIO, USU_HORINI,     \
+                                      USU_TOTALWKR, USU_TOTALDEP, USU_TOTALAFA,  \
+                                      USU_TOTALHDP, USU_TOTALHCC, USU_ERROS)     \
+             VALUES (:aUUIDRUN, :aSTATUS, :dDathoj, :xHora,                       \
+                     :xTOTALWKR, :xTOTALDEP, :xTOTALAFA,                        \
+                     :xTOTALHDP, :xTOTALHCC, :xERROS)", xErro, aMenLog);
+  Se (xErro = 0)
+    Inicio
       FinalizarTransacao();
-      aMenLog = "Requisição recebida com sucesso.";
+      aMenLog = "Requisição inserida com sucesso.";
+      ProcessaRun.mensagemLog = aMenLog;
     Fim;
-    Senao 
+  Senao
     Inicio
       DesfazerTransacao();
-      aMenLog = "Requisição recebida com sucesso.";
+      aMenLog = "Erro ao inserir requisição: " + aMenLog;
+      ProcessaRun.mensagemLog = aMenLog;
     Fim;
-        
-    }
+}
+
+Funcao AtualizarRequisicao(); {
+  dDathoj = datsis;
+  xHora = horsis;
+  ConverteMascara(1, xHora, aHora, "hh:mm");
+  IniciarTransacao();
+  ExecSQLEx("UPDATE USU_TADPRUN                  \
+             SET USU_STATUS    = :aSTATUS,        \
+                 USU_DTFIM     = :dDathoj,         \
+                 USU_HORFIM    = :xHora,       \
+                 USU_TOTALWKR  = :xTOTALWKR,      \
+                 USU_TOTALDEP  = :xTOTALDEP,      \
+                 USU_TOTALAFA  = :xTOTALAFA,      \
+                 USU_TOTALHDP  = :xTOTALHDP,      \
+                 USU_TOTALHCC  = :xTOTALHCC,      \
+                 USU_ERROS     = :xERROS           \
+             WHERE USU_UUIDRUN = :aUUIDRUN", xErro, aMenLog);
+  Se (xErro = 0)
+    Inicio
+      FinalizarTransacao();
+      aMenLog = "Requisição atualizada com sucesso.";
+      ProcessaRun.mensagemLog = aMenLog;
+    Fim;
+  Senao
+    Inicio
+      DesfazerTransacao();
+      aMenLog = "Erro ao atualizar requisição: " + aMenLog;
+      ProcessaRun.mensagemLog = aMenLog;
+    Fim;
+}

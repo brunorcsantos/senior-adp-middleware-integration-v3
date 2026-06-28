@@ -1,0 +1,78 @@
+Definir Funcao InserirAfastamentos();
+
+Definir Alfa aMenLog;
+Definir Alfa aQtdLinhas;
+Definir Numero xQtdLinhas;
+Definir Numero nLinha;
+
+Definir Alfa aUUIDRUN;
+Definir Alfa aUUIDSO;
+Definir Numero xSEQREG;
+Definir Numero xNUMEMP;
+Definir Numero xTIPCOL;
+Definir Numero xNUMCAD;
+Definir Data dDATAFA;
+Definir Alfa aASSOCIATEOID;
+Definir Alfa aWORKERID;
+Definir Numero xQTDDIAS;
+Definir Data dDTRETORNO;
+Definir Alfa aSTLICENCA;
+Definir Alfa aSTRETORNO;
+Definir Alfa aSITUACAO;
+Definir Data dDTATUALIZ;
+
+xQtdLinhas = ProcessaAfastamentos.afastamentos.QtdLinhas;
+InserirAfastamentos();
+
+@------------------------------------Funções----------------------------------------@
+
+Funcao InserirAfastamentos(); {
+  IniciarTransacao();
+
+  Enquanto (nLinha < xQtdLinhas) {
+    ProcessaAfastamentos.afastamentos.LinhaAtual = nLinha;
+
+    aUUIDRUN      = ProcessaAfastamentos.afastamentos.UUIDRUN;
+    aUUIDSO       = ProcessaAfastamentos.afastamentos.UUIDSO;
+    xSEQREG       = ProcessaAfastamentos.afastamentos.SEQREG;
+    xNUMEMP       = ProcessaAfastamentos.afastamentos.NUMEMP;
+    xTIPCOL       = ProcessaAfastamentos.afastamentos.TIPCOL;
+    xNUMCAD       = ProcessaAfastamentos.afastamentos.NUMCAD;
+    dDATAFA       = ProcessaAfastamentos.afastamentos.DATAFA;
+    aASSOCIATEOID = ProcessaAfastamentos.afastamentos.ASSOCIATEOID;
+    aWORKERID     = ProcessaAfastamentos.afastamentos.WORKERID;
+    xQTDDIAS      = ProcessaAfastamentos.afastamentos.QTDDIAS;
+    dDTRETORNO    = ProcessaAfastamentos.afastamentos.DTRETORNO;
+    aSTLICENCA    = ProcessaAfastamentos.afastamentos.STLICENCA;
+    aSTRETORNO    = ProcessaAfastamentos.afastamentos.STRETORNO;
+    aSITUACAO     = ProcessaAfastamentos.afastamentos.SITUACAO;
+    dDTATUALIZ    = ProcessaAfastamentos.afastamentos.DTATUALIZ;
+
+    ExecSQLEx("INSERT INTO USU_TADPAFA (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,        \
+                                        USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,          \
+                                        USU_DATAFA, USU_ASSOCOID, USU_WORKERID,  \
+                                        USU_QTDDIAS, USU_DTRETORNO,                  \
+                                        USU_STLICENCA, USU_STRETORNO,                \
+                                        USU_SITUACAO, USU_DTATUALIZ)                 \
+               VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                                \
+                       :xNUMEMP, :xTIPCOL, :xNUMCAD,                                 \
+                       :dDATAFA, :aASSOCIATEOID, :aWORKERID,                          \
+                       :xQTDDIAS, :dDTRETORNO,                                        \
+                       :aSTLICENCA, :aSTRETORNO,                                      \
+                       :aSITUACAO, :dDTATUALIZ)", xErro, aMenLog);
+
+    Se (xErro <> 0)
+      Inicio
+        DesfazerTransacao();
+        aMenLog = "Erro ao inserir afastamento " + aUUIDSO + ": " + aMenLog;
+        ProcessaAfastamentos.mensagemLog = aMenLog;
+      Fim;
+
+    nLinha++;
+  }
+
+  FinalizarTransacao();
+  IntParaAlfa(xQtdLinhas, aQtdLinhas);
+  aMenLog = "Afastamentos inseridos com sucesso. Total: " + aQtdLinhas;
+  ProcessaAfastamentos.mensagemLog = aMenLog;
+}
