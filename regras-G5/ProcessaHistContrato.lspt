@@ -4,6 +4,7 @@ Definir Alfa aMenLog;
 Definir Alfa aQtdLinhas;
 Definir Numero xQtdLinhas;
 Definir Numero nLinha;
+Definir Numero xTeveErro;
 
 Definir Alfa aUUIDRUN;
 Definir Alfa aUUIDSO;
@@ -20,7 +21,7 @@ Definir Alfa aSITUACAO;
 Definir Data dDTATUALIZ;
 Definir Data dDTPROCESS;
 
-xQtdLinhas = ProcessaHistContrato.histContrato.QtdLinhas;
+xQtdLinhas = ProcessaHistContrato.histContratos.QtdLinhas;
 InserirHistContrato();
 
 @------------------------------------Funções----------------------------------------@
@@ -29,22 +30,22 @@ Funcao InserirHistContrato(); {
   IniciarTransacao();
 
   Enquanto (nLinha < xQtdLinhas) {
-    ProcessaHistContrato.histContrato.LinhaAtual = nLinha;
+    ProcessaHistContrato.histContratos.LinhaAtual = nLinha;
 
-    aUUIDRUN   = ProcessaHistContrato.histContrato.UUIDRUN;
-    aUUIDSO    = ProcessaHistContrato.histContrato.UUIDSO;
-    xSEQREG    = ProcessaHistContrato.histContrato.SEQREG;
-    xNUMEMP    = ProcessaHistContrato.histContrato.NUMEMP;
-    xTIPCOL    = ProcessaHistContrato.histContrato.TIPCOL;
-    xNUMCAD    = ProcessaHistContrato.histContrato.NUMCAD;
-    dDATALT    = ProcessaHistContrato.histContrato.DATALT;
-    aCODPRAZO  = ProcessaHistContrato.histContrato.CODPRAZO;
-    aNOMPRAZO  = ProcessaHistContrato.histContrato.NOMPRAZO;
-    aCODJORNADA  = ProcessaHistContrato.histContrato.CODJORNADA;
-    aNOMJORNADA  = ProcessaHistContrato.histContrato.NOMJORNADA;
-    aSITUACAO  = ProcessaHistContrato.histContrato.SITUACAO;
-    dDTATUALIZ = ProcessaHistContrato.histContrato.DTATUALIZ;
-    dDTPROCESS = ProcessaHistContrato.histContrato.DTPROCESS;
+    aUUIDRUN   = ProcessaHistContrato.histContratos.UUIDRUN;
+    aUUIDSO    = ProcessaHistContrato.histContratos.UUIDSO;
+    xSEQREG    = ProcessaHistContrato.histContratos.SEQREG;
+    xNUMEMP    = ProcessaHistContrato.histContratos.NUMEMP;
+    xTIPCOL    = ProcessaHistContrato.histContratos.TIPCOL;
+    xNUMCAD    = ProcessaHistContrato.histContratos.NUMCAD;
+    dDATALT    = ProcessaHistContrato.histContratos.DATALT;
+    aCODPRAZO  = ProcessaHistContrato.histContratos.CODPRAZO;
+    aNOMPRAZO  = ProcessaHistContrato.histContratos.NOMPRAZO;
+    aCODJORNADA  = ProcessaHistContrato.histContratos.CODJORNADA;
+    aNOMJORNADA  = ProcessaHistContrato.histContratos.NOMJORNADA;
+    aSITUACAO  = ProcessaHistContrato.histContratos.SITUACAO;
+    dDTATUALIZ = ProcessaHistContrato.histContratos.DTATUALIZ;
+    dDTPROCESS = ProcessaHistContrato.histContratos.DTPROCESS;
 
     ExecSQLEx("INSERT INTO USU_TADPHCO (USU_UUIDRUN, USU_UUIDSO, USU_SEQREG,  \
                                         USU_NUMEMP, USU_TIPCOL, USU_NUMCAD,    \
@@ -54,21 +55,26 @@ Funcao InserirHistContrato(); {
                VALUES (:aUUIDRUN, :aUUIDSO, :xSEQREG,                          \
                        :xNUMEMP, :xTIPCOL, :xNUMCAD,                           \
                        :dDATALT, :aCODPRAZO, :aNOMPRAZO,                       \
-                       :aCODJORNADA, aNOMJORNADA, :aSITUACAO,                  \
+                       :aCODJORNADA, :aNOMJORNADA, :aSITUACAO,                  \
                         :dDTATUALIZ, :dDTPROCESS)", xErro, aMenLog);
 
     Se (xErro <> 0)
       Inicio
         DesfazerTransacao();
         aMenLog = "Erro ao inserir hist. contrato " + aUUIDSO + ": " + aMenLog;
-
+        xTeveErro = 1;
+        ProcessaHistContrato.erroExecucao = aMenLog;
+        ProcessaHistContrato.mensagemLog = aMenLog;
       Fim;
 
     nLinha++;
   }
 
   FinalizarTransacao();
-  IntParaAlfa(xQtdLinhas, aQtdLinhas);
-  aMenLog = "Hist. contrato inseridos com sucesso. Total: " + aQtdLinhas;
-  ProcessaHistContrato.mensagemLog = aMenLog;
+  Se (xTeveErro <> 1)
+    Inicio
+      IntParaAlfa(xQtdLinhas, aQtdLinhas);
+      aMenLog = "Hist. contrato inseridos com sucesso. Total: " + aQtdLinhas;
+      ProcessaHistContrato.mensagemLog = aMenLog;
+    Fim;
 }

@@ -4,6 +4,7 @@ Definir Alfa aMenLog;
 Definir Alfa aQtdLinhas;
 Definir Numero xQtdLinhas;
 Definir Numero nLinha;
+Definir Numero xTeveErro;
 
 Definir Alfa aUUIDRUN;
 Definir Alfa aUUIDSO;
@@ -58,7 +59,10 @@ Funcao InserirHistCargo(); {
     Se (xErro <> 0)
       Inicio
         DesfazerTransacao();
-        aMenLog = "Erro ao inserir hist. depto " + aUUIDSO + ": " + aMenLog;
+        aMenLog = "Erro ao inserir hist. cargo " + aUUIDSO + ": " + aMenLog;
+        xTeveErro = 1;
+        ProcessaHistCargo.erroExecucao = aMenLog;
+        ProcessaHistCargo.mensagemLog = aMenLog;
 
       Fim;
 
@@ -66,7 +70,10 @@ Funcao InserirHistCargo(); {
   }
 
   FinalizarTransacao();
-  IntParaAlfa(xQtdLinhas, aQtdLinhas);
-  aMenLog = "Hist. cargo inseridos com sucesso. Total: " + aQtdLinhas;
-  ProcessaHistcargo.mensagemLog = aMenLog;
+  Se (xTeveErro <> 1)
+    Inicio
+      IntParaAlfa(xQtdLinhas, aQtdLinhas);
+      aMenLog = "Hist. cargo inseridos com sucesso. Total: " + aQtdLinhas;
+      ProcessaHistCargo.mensagemLog = aMenLog;
+    Fim;
 }

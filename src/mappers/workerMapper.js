@@ -12,13 +12,23 @@ const findCustomField = (stringFields = [], shortName) => {
   return stringFields.find(f => f.nameCode?.shortName === shortName)?.stringValue ?? null;
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return null;
-  return dateStr.substring(0, 10);
+const formatDate = (value) => {
+  if (!value || typeof value !== 'string') return null;
+
+  const [datePart] = value.split('T');
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
 };
 
 const formatDateTime = (date = new Date()) => {
-  return date.toISOString().replace('T', ' ').substring(0, 19);
+  const pad = (n) => String(n).padStart(2, '0');
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 export const mapWorker = (worker, uuidRun) => {
@@ -100,7 +110,7 @@ export const mapWorker = (worker, uuidRun) => {
       // Controle de staging
       SITUACAO: 'P',
       DTATUALIZ: formatDateTime(),
-      DTPROCESSADO: null,
+      DTPROCESS: null,
     };
   } catch (err) {
     logger.error('MAPPER', `Erro ao mapear worker ${worker?.associateOID}: ${err.message}`, uuidRun);
@@ -143,7 +153,7 @@ export const mapHistDeptos = (workers, uuidRun) => {
         NOMDEPTO: homeOrg.shortName ?? null,
         SITUACAO: 'P',
         DTATUALIZ: formatDateTime(),
-        DTPROCESSADO: null,
+        DTPROCESS: null,
       };
     } catch (err) {
       logger.error('MAPPER', `Erro ao mapear hist.depto worker ${worker?.associateOID}: ${err.message}`, uuidRun);
@@ -175,7 +185,7 @@ export const mapHistCC = (workers, uuidRun) => {
         NOMCC: assignedOrg.shortName ?? null,
         SITUACAO: 'P',
         DTATUALIZ: formatDateTime(),
-        DTPROCESSADO: null,
+        DTPROCESS: null,
       };
     } catch (err) {
       logger.error('MAPPER', `Erro ao mapear hist.CC worker ${worker?.associateOID}: ${err.message}`, uuidRun);
